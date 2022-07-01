@@ -1,6 +1,7 @@
 package com.jared.manager;
 
 import com.jared.manager.entities.Departments;
+import com.jared.manager.entities.Leaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -25,24 +26,56 @@ public class CrudRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws ExecutionException, InterruptedException {
 
-        CompletableFuture<ListTablesResponse> listTablesResponseCompletableFuture = asyncClient.listTables();
+        this.createDepartmentsTable();
+        this.createLeadersTable();
 
-        CompletableFuture<List<String>> listCompletableFuture = listTablesResponseCompletableFuture.thenApply(ListTablesResponse::tableNames);
+    }
 
-        listCompletableFuture.thenAccept(tables -> {
-            try{
-                if(!tables.contains(Departments.class.getSimpleName())) {
-                    DynamoDbAsyncTable<Departments> departmentsTable = enhancedAsyncClient.table(
-                            Departments.class.getSimpleName(),
-                            TableSchema.fromBean(Departments.class));
-                    departmentsTable.createTable();
+
+    private void createDepartmentsTable() {
+        try{
+            CompletableFuture<ListTablesResponse> listTablesResponseCompletableFuture = asyncClient.listTables();
+            CompletableFuture<List<String>> listCompletableFuture = listTablesResponseCompletableFuture.thenApply(ListTablesResponse::tableNames);
+            listCompletableFuture.thenAccept(tables -> {
+                    if(!tables.contains(Departments.class.getSimpleName())) {
+                        DynamoDbAsyncTable<Departments> departmentsTable = enhancedAsyncClient.table(
+                                Departments.class.getSimpleName(),
+                                TableSchema.fromBean(Departments.class));
+                        departmentsTable.createTable();
+                    } else {
+                        System.out.printf("%d is alreday in the db", Departments.class.getSimpleName());
+                    }
+            });
+        }catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    private void createLeadersTable() {
+        try {
+
+            CompletableFuture<ListTablesResponse> listTablesResponseCompletableFuture = asyncClient.listTables();
+            CompletableFuture<List<String>> listCompletableFuture =
+                    listTablesResponseCompletableFuture.thenApply(ListTablesResponse::tableNames);
+            listCompletableFuture.thenAccept(tables -> {
+
+                if(!tables.contains(Leaders.class.getSimpleName())) {
+                    try{
+
+                        DynamoDbAsyncTable<Leaders> leadersTable = enhancedAsyncClient.table(
+                                Leaders.class.getSimpleName(),
+                                TableSchema.fromBean(Leaders.class));
+
+                        leadersTable.createTable();
+                    }catch (Exception ex) {
+                        System.out.println(ex.getMessage());
+                    }
                 } else {
-                    System.out.println("Table is already created");
+                    System.out.printf("%d is alreday in the db", Leaders.class.getSimpleName());
                 }
-            }catch (Exception ex){
-                ex.printStackTrace();
-            }
-
-        });
+            });
+        }catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 }
