@@ -2,6 +2,7 @@ package com.jared.manager;
 
 import com.jared.manager.entities.Departments;
 import com.jared.manager.entities.Leaders;
+import com.jared.manager.repositories.LeadersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -22,13 +23,19 @@ public class CrudRunner implements CommandLineRunner {
     @Autowired
     private DynamoDbEnhancedAsyncClient enhancedAsyncClient;
 
+    @Autowired
+    private LeadersRepository repo;
 
     @Override
     public void run(String... args) throws ExecutionException, InterruptedException {
-
-        this.createDepartmentsTable();
-        this.createLeadersTable();
-
+//
+//        this.createDepartmentsTable();
+//        this.createLeadersTable();
+//
+//        for (int i = 0 ; i < 100; i++) {
+//            System.out.println("---");
+//        }
+//        repo.get("hola");
     }
 
 

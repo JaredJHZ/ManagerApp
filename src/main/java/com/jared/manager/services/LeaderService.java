@@ -1,5 +1,6 @@
 package com.jared.manager.services;
 
+import com.amazonaws.services.dynamodbv2.document.Index;
 import com.jared.manager.daos.DepartmentResponse;
 import com.jared.manager.daos.LeaderResponse;
 import com.jared.manager.entities.Departments;
@@ -34,9 +35,20 @@ public class LeaderService {
         ).onErrorReturn(null);
     }
 
+
+    public Mono<LeaderResponse> get(String name) throws ExecutionException, InterruptedException {
+        var obj = repo.get(name).get();
+        return Mono.fromFuture(
+                repo.get(name)
+        ).thenReturn(
+                setResponse(obj)
+        ).onErrorReturn(null);
+    }
+
     private LeaderResponse setResponse(Leaders leader) {
         var obj = new LeaderResponse();
-        obj.setLeadersName(leader.getLeaderName());
+        obj.setLeadersName(leader.getName());
         return obj;
     }
+
 }

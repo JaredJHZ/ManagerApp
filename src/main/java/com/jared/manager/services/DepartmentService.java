@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.concurrent.ExecutionException;
+
 @Service
 public class DepartmentService {
     @Autowired
@@ -17,7 +19,14 @@ public class DepartmentService {
     @Autowired
     LeadersRepository leader;
 
-    public Mono<DepartmentResponse> createNewDepartment(Departments depto) {
+    public Mono<DepartmentResponse> createNewDepartment(Departments depto) throws ExecutionException, InterruptedException {
+
+        var leaderExist = leader.get(depto.getLeader()).get();
+
+        System.out.println("JOJOJOJOJO");
+        System.out.println(leaderExist);
+
+
         return Mono.fromFuture(repo.save(depto))
                 .thenReturn(setResponse(depto))
                 .onErrorReturn(null);

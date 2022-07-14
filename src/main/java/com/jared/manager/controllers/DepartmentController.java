@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.concurrent.ExecutionException;
+
 @RestController
 @RequestMapping("/departments")
 public class DepartmentController {
@@ -16,7 +18,13 @@ public class DepartmentController {
     DepartmentService service;
     @PostMapping("/save")
     public Mono<DepartmentResponse> saveDepartment(@RequestBody Departments depto) {
-        return service.createNewDepartment(depto);
+        try {
+            return service.createNewDepartment(depto);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @GetMapping("/all")

@@ -4,7 +4,9 @@ import com.jared.manager.daos.LeaderResponse;
 import com.jared.manager.entities.Leaders;
 import com.jared.manager.services.LeaderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 import java.util.concurrent.ExecutionException;
@@ -23,7 +25,15 @@ public class LeaderController {
 
     @GetMapping("/{id}")
     public Mono<LeaderResponse> getLeader(@PathVariable Integer id) throws ExecutionException, InterruptedException {
-        return service.get(id);
+        try {
+            return service.get(id);
+        } catch (Exception ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "error");
+        }
+    }
+    @GetMapping("/name/{name}")
+    public Mono<LeaderResponse> getLeader(@PathVariable String name) throws ExecutionException, InterruptedException {
+        return service.get(name);
     }
 
 }
